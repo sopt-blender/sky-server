@@ -1,13 +1,13 @@
 import express from "express";
+import { postController } from "../../controllers/postController";
+import userModel from "../../models/userModel";
+import responseMessage from "../../modules/responseMessage";
+import statusCode from "../../modules/statusCode";
+import util from "../../modules/util";
 const postsRouter = express.Router();
 
-/* GET users listing. */
-postsRouter.get("/", function (req, res, next) {
-  res.send("respond with a resource");
-});
-
 // 전체 포스트
-postsRouter.get("/");
+postsRouter.get("/", postController.get_all);
 // 포스트 하나
 postsRouter.get("/:postId");
 // 포스트 업로드

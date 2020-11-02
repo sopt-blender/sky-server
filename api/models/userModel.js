@@ -10,4 +10,4 @@ const userSchema = new Schema({
   scrappedPosts: [{ type: String, ref: "post" }],
 });
 
-export default mongoos.model("user", userSchema);
+export default mongoose.model("User", userSchema);

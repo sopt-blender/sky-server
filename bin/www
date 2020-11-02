@@ -19,8 +19,8 @@ db.once("open", function () {
 mongoose.connect(
   "mongodb+srv://modak:" +
     mogoCongig.PW +
-    "@modoc-mqsht.mongodb.net/SoptWorking_back?retryWrites=true&w=majority",
-  { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false },
+    "@modoc-mqsht.mongodb.net/sky_server?retryWrites=true&w=majority",
+  { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false }
 );
 
 /**
