@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon --exec babel-node ./bin/www"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
     "aws-sdk": "^2.783.0",
     "cookie-parser": "~1.4.4",
     "crypto": "^1.0.1",
@@ -20,5 +21,11 @@
     "multer-s3": "^2.9.0",
     "pbkdf2": "^3.1.1",
     "rand-token": "^1.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/node": "^7.12.1",
+    "@babel/preset-env": "^7.12.1"
   }
 }

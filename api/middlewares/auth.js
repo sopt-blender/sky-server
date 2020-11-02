@@ -1,6 +1,6 @@
-const util = require("../modules/util");
-const jwt = require("../modules/jwt");
-const userModel = require("../model/user");
+import util from "../modules/util";
+import jwt from "../modules/jwt";
+import userModel from "../model/user";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
