@@ -22,24 +22,31 @@ export const postController = {
     try {
       const { postId } = req.params;
       const post = await postModel.findById(postId);
-      console.log(post);
-      res.status(statusCode.OK).json(util.success(statusCode.OK), "짜잔", post);
+      post
+        ? res
+            .status(statusCode.OK)
+            .json(util.success(statusCode.OK, "짜잔", post))
+        : res
+            .status(statusCode.NOT_FOUND)
+            .json(util.fail(statusCode.NOT_FOUND, "포스트를 찾을 수 없습니다"));
     } catch (error) {
       console.log(error);
       res
-        .status(statusCode.NOT_FOUND)
+        .status(statusCode.INTERNAL_SERVER_ERROR)
         .json(
           util.fail(
-            statusCode.NOT_FOUND,
-            "해당 id를 갖고 있는 포스트를 찾을 수 없습니다",
+            statusCode.INTERNAL_SERVER_ERROR,
+            "알 수 없는 에러가 발생했습니다",
           ),
         );
     }
   },
   create_post: async (req, res, next) => {
     try {
+      console.log(req.file);
+      console.log(req.body);
       const newPost = new postModel({
-        image: req.file.path,
+        image: req.file.location,
         imageType: req.body.imageType,
         location: req.body.location,
         time: req.body.time,
@@ -62,17 +69,22 @@ export const postController = {
   },
 
   update_post: async (req, res, next) => {
-    const { productId: id } = req.params;
-    const { body: props } = req;
-    console.log(props);
     try {
+      const { postId } = req.params;
+      console.log(req.body);
+      const props = {
+        imageType: req.body.imageType,
+        location: req.body.location,
+        time: req.body.time,
+      };
+      console.log(props);
       const updatedPost = await postModel
-        .findByIdAndUpdate(id, props, {
+        .findByIdAndUpdate(postId, props, {
           new: true,
         })
         .exec();
       console.log(updatedPost);
-      product
+      updatedPost
         ? res
             .status(statusCode.OK)
             .json(
@@ -96,7 +108,7 @@ export const postController = {
 
   delete_post: async (req, res, next) => {
     try {
-      const { _id: postId } = req.params;
+      const { postId } = req.params;
       const post = await postModel.findByIdAndDelete(postId);
       res
         .status(statusCode.OK)
