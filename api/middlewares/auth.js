@@ -1,6 +1,6 @@
 import util from "../modules/util";
 import jwt from "../modules/jwt";
-import userModel from "../model/user";
+import userModel from "../models/userModel";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
@@ -20,13 +20,15 @@ module.exports = {
       return res.json(util.fail(405, "유효하지 않은 토큰입니다."));
     }
 
-    const userEmail = user.email;
+    const userId = user.id;
+    console.log(user);
+    console.log("E");
     if (!userEmail) {
       return res.status(405).json({
         message: "유효하지 않은 토큰입니다.",
       });
     } else {
-      const userInfo = await userModel.findOne({ email: userEmail });
+      const userInfo = await userModel.findOne({ userId: userId });
       req.user = userInfo;
       next();
     }
