@@ -6,7 +6,7 @@ import util from "../../modules/util";
 
 const userController = {
   kakaoLogin: async (req, res) => {
-    const token = "KhkAZDqKgIVuSpkgI48NMbhk1aVi1v-Dj3DJWgopyV4AAAF1iALXhA";
+    const token = "G3CD3yXf-u76qnoNYRwGhRFnttP2F5NqmY9zJQo9c-wAAAF1jUCY7A";
     const kaHeader = "Bearer " + token; // Bearer 다음에 공백 추가
     const api_url = "https://kapi.kakao.com/v2/user/me";
     const options = {
@@ -23,7 +23,6 @@ const userController = {
         const resultUser = await userModel.findOne({ userId: id });
         if (resultUser) {
           const webtoken = await jwt.sign(id);
-          console.log(webtoken);
           res
             .status(statusCode.OK)
             .json(util.success(statusCode.OK, "성공", webtoken));
