@@ -7,7 +7,7 @@ const userSchema = new Schema({
   // 웹토큰 ?
   createdAt: { type: Date, default: Date.now() },
   updatedAt: { type: Date },
-  scrappedPosts: [{ type: String, ref: "Post" }],
+  likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 });
 
 export default mongoose.model("User", userSchema);

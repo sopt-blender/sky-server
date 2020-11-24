@@ -8,7 +8,7 @@ const postsRouter = express.Router();
 postsRouter.get("/", postController.get_all_posts);
 
 // 내 포스트 조회
-postsRouter.get("/", postController.get_my_posts);
+postsRouter.get("/my", auth.checkToken, postController.get_my_posts);
 
 // 포스트 하나
 postsRouter.get("/:postId", postController.get_one_post);

@@ -20,10 +20,13 @@ export const postController = {
     }
   },
   get_my_posts: async (req, res, next) => {
-    const { id: userId } = req.user;
+    const { _id: userId } = req.user;
     try {
       const myPosts = await Post.find({ creator: userId }).exec();
       console.log(myPosts);
+      res
+        .status(statusCode.OK)
+        .json(util.success(statusCode.OK, "짜잔", myPosts));
     } catch (error) {
       console.log(error);
     }
@@ -130,34 +133,9 @@ export const postController = {
     }
   },
   toggle_like: async (req, res, next) => {
+    const { _id: userId } = req.user;
+    const { postId } = req.params;
     try {
-      const { _id: userId } = req.user;
-      const { postId } = req.params;
-      console.log(userId);
-      // const post = await Post.findById(postId);
-      const alreadyLike = await Like.findOne({ userId, postId });
-      if (alreadyLike) {
-        await Like.deleteOne({ userId, postId });
-        return res
-          .status(statusCode.OK)
-          .json(
-            util.success(
-              statusCode.OK,
-              responseMessage.UNLIKE_SUCCESS,
-              alreadyLike,
-            ),
-          );
-      } else {
-        const like = await Like.create({
-          userId,
-          postId,
-        });
-        return res
-          .status(statusCode.OK)
-          .json(
-            util.success(statusCode.OK, responseMessage.LIKE_SUCCESS, like),
-          );
-      }
     } catch (error) {
       console.log(error);
       res
@@ -170,4 +148,46 @@ export const postController = {
         );
     }
   },
+
+  // toggle_like: async (req, res, next) => {
+  //   try {
+  //     const { _id: userId } = req.user;
+  //     const { postId } = req.params;
+  //     console.log(userId);
+  //     // const post = await Post.findById(postId);
+  //     const alreadyLike = await Like.findOne({ userId, postId });
+  //     if (alreadyLike) {
+  //       await Like.deleteOne({ userId, postId });
+  //       return res
+  //         .status(statusCode.OK)
+  //         .json(
+  //           util.success(
+  //             statusCode.OK,
+  //             responseMessage.UNLIKE_SUCCESS,
+  //             alreadyLike,
+  //           ),
+  //         );
+  //     } else {
+  //       const like = await Like.create({
+  //         userId,
+  //         postId,
+  //       });
+  //       return res
+  //         .status(statusCode.OK)
+  //         .json(
+  //           util.success(statusCode.OK, responseMessage.LIKE_SUCCESS, like),
+  //         );
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     res
+  //       .status(statusCode.INTERNAL_SERVER_ERROR)
+  //       .json(
+  //         util.fail(
+  //           statusCode.INTERNAL_SERVER_ERROR,
+  //           responseMessage.TOGGLE_LIKE_FAIL,
+  //         ),
+  //       );
+  //   }
+  // },
 };
