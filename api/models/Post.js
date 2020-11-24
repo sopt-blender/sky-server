@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const postSchema = new Schema({
   image: { type: String, required: true },
-  imageType: { type: Number, required: true }, // 1 = Desktop, 2 = Mobile, 3 = All
+  imageType: { type: String, required: true },
   createdAt: { type: Date, default: Date.now() },
   updatedAt: { type: Date },
   location: { type: String, required: true },

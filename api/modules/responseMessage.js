@@ -12,6 +12,7 @@ module.exports = {
   LOGIN_FAIL: "로그인 실패",
   NO_USER: "존재하지 않는 회원입니다.",
   MISS_MATCH_PW: "비밀번호가 맞지 않습니다.",
+  LOGIN_REQUIRED: "로그인이 필요합니다.",
 
   // 인증
   EMPTY_TOKEN: "토큰 값이 없습니다.",
@@ -27,6 +28,15 @@ module.exports = {
   PROFILE_GET_FAIL: "프로필 기본정보 조회 실패",
   PROFILE_POST_SUCCESS: "프로필 등록 성공",
   PROFILE_POST_FAIL: "프로필 등록 실패",
+
+  // 포스트
+  POST_CREATE_SUCCESS: "포스트 생성 성공",
+  POST_CREATE_FAIL: "포스트 생성 실패",
+  POSTS_GET_ALL_SUCCESS: "모든 포스트 조회 성공",
+  POSTS_GET_ONE_SUCCESS: "포스트 조회 성공",
+  POSTS_GET_ONE_FAIL: "포스트 조회 실패",
+  POSTS_GET_MINE_SUCCESS: "내 포스트 조회 성공",
+  POSTS_GET_LIKED_SUCCESS: "좋아요한 포스트 조회 성공",
 
   // 좋아요
   LIKE_SUCCESS: "좋아요 생성 성공",

@@ -53,7 +53,7 @@ const userController = {
   get_one_user: async (req, res, next) => {
     const { userId } = req.params;
     try {
-      const user = await User.findById(userId);
+      const user = await User.findById(userId, { username: 1, likedPosts: 1 });
       res
         .status(statusCode.OK)
         .json(

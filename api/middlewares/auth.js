@@ -28,7 +28,7 @@ module.exports = {
       });
     } else {
       const userInfo = await User.findOne({ userId: userId });
-      console.log(userInfo);
+      //   console.log(userInfo);
       req.user = userInfo;
       next();
     }

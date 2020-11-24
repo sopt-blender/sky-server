@@ -1,6 +1,4 @@
-import likeModel from "../../models/Like";
 import Post from "../../models/Post";
-import postModel from "../../models/Post";
 import User from "../../models/User";
 import responseMessage from "../../modules/responseMessage";
 import statusCode from "../../modules/statusCode";
@@ -9,17 +7,22 @@ import util from "../../modules/util";
 export const postController = {
   get_all_posts: async (req, res, next) => {
     try {
-      const { imagetype, page } = req.query;
+      const { image_type, page } = req.query;
 
-      const posts = await postModel.find(
-        imagetype ? { imageType: imagetype } : {},
-        null,
+      const posts = await Post.find(
+        image_type ? { imageType: image_type } : {},
+        { image: 1, imageType: 1, location: 1, time: 1, creatorId: 1 },
         page ? { skip: (page - 1) * 20, limit: 20 } : {},
       );
-
       res
         .status(statusCode.OK)
-        .json(util.success(statusCode.OK, "짜잔", posts));
+        .json(
+          util.success(
+            statusCode.OK,
+            responseMessage.POSTS_GET_ALL_SUCCESS,
+            posts,
+          ),
+        );
     } catch (error) {
       console.log(error);
       res.status(statusCode.BAD_REQUEST).json(
@@ -29,16 +32,65 @@ export const postController = {
   },
   get_my_posts: async (req, res, next) => {
     const { _id: userId } = req.user;
+    if (!userId) {
+      return res
+        .status(statusCode.UNAUTHORIZED)
+        .json(
+          util.fail(statusCode.UNAUTHORIZED, responseMessage.LOGIN_REQUIRED),
+        );
+    }
     try {
-      const myPosts = await Post.find({ creator: userId }).exec();
-      console.log(myPosts);
+      const myPosts = await Post.find(
+        { creatorId: userId },
+        { image: 1, imageType: 1, location: 1, time: 1, creatorId: 1 },
+      ).exec();
       res
         .status(statusCode.OK)
-        .json(util.success(statusCode.OK, "짜잔", myPosts));
+        .json(
+          util.success(
+            statusCode.OK,
+            responseMessage.POSTS_GET_MINE_SUCCESS,
+            myPosts,
+          ),
+        );
     } catch (error) {
       console.log(error);
     }
   },
+  get_liked_posts: async (req, res, next) => {
+    const { _id: userId } = req.user;
+    if (!userId) {
+      return res
+        .status(statusCode.UNAUTHORIZED)
+        .json(
+          util.fail(statusCode.UNAUTHORIZED, responseMessage.LOGIN_REQUIRED),
+        );
+    }
+    try {
+      const user = await User.findById(userId);
+      const likedPosts = user.likedPosts;
+      res
+        .status(statusCode.OK)
+        .json(
+          util.success(
+            statusCode.OK,
+            responseMessage.POSTS_GET_LIKED_SUCCESS,
+            likedPosts,
+          ),
+        );
+    } catch (error) {
+      console.log(error);
+      res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .json(
+          util.fail(
+            statusCode.INTERNAL_SERVER_ERROR,
+            responseMessage.INTERNAL_SERVER_ERROR,
+          ),
+        );
+    }
+  },
+
   get_one_post: async (req, res, next) => {
     try {
       const { postId } = req.params;
@@ -46,10 +98,21 @@ export const postController = {
       post
         ? res
             .status(statusCode.OK)
-            .json(util.success(statusCode.OK, "짜잔", post))
+            .json(
+              util.success(
+                statusCode.OK,
+                responseMessage.POSTS_GET_ONE_SUCCESS,
+                post,
+              ),
+            )
         : res
             .status(statusCode.NOT_FOUND)
-            .json(util.fail(statusCode.NOT_FOUND, "포스트를 찾을 수 없습니다"));
+            .json(
+              util.fail(
+                statusCode.NOT_FOUND,
+                responseMessage.POSTS_GET_ONE_FAIL,
+              ),
+            );
     } catch (error) {
       console.log(error);
       res
@@ -63,26 +126,44 @@ export const postController = {
     }
   },
   create_one_post: async (req, res, next) => {
-    const { id: userId } = req.user;
+    const imageType = req._parsedUrl.pathname.substring(1);
+    const { location, time } = req.body;
+    const { _id: userId } = req.user;
+    if (!userId) {
+      return res
+        .status(statusCode.UNAUTHORIZED)
+        .json(
+          util.fai(statusCode.UNAUTHORIZED, responseMessage.LOGIN_REQUIRED),
+        );
+    }
     try {
       const newPost = await Post.create({
         image: req.file.transforms[0].location,
-        imageType: req.body.imageType,
-        location: req.body.location,
-        time: req.body.time,
+        imageType,
+        location,
+        time,
         creatorId: userId,
       });
 
       res
         .status(statusCode.CREATED)
         .json(
-          util.success(statusCode.CREATED, "포스트가 생성되었습니다", newPost),
+          util.success(
+            statusCode.CREATED,
+            responseMessage.POST_CREATE_SUCCESS,
+            newPost,
+          ),
         );
     } catch (error) {
       console.log(error);
-      res.status(statusCode.UNAUTHORIZED).json(
-        util.fail(statusCode.UNAUTHORIZED, "로그인이 필요합니다"), // 에러 메시지 추가
-      );
+      res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .json(
+          util.fail(
+            statusCode.INTERNAL_SERVER_ERROR,
+            responseMessage.INTERNAL_SERVER_ERROR,
+          ),
+        );
     }
   },
 
@@ -146,7 +227,13 @@ export const postController = {
     const { postId } = req.params;
     try {
       const user = await User.findById(userId);
-      const post = await Post.findById(postId);
+      const post = await Post.findById(postId, {
+        image: 1,
+        imageType: 1,
+        location: 1,
+        time: 1,
+        creatorId: 1,
+      });
 
       if (!user.likedPosts.includes(postId)) {
         // 좋아요 생성
