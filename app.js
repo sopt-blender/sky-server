@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import statusCode from "./api/modules/statusCode";
 import indexRouter from "./api/routes";
+import cors from "cors";
 
 const app = express();
 
