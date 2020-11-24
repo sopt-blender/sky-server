@@ -131,11 +131,11 @@ export const postController = {
   },
   toggle_like: async (req, res, next) => {
     try {
-      const { id: userId } = req.user;
+      const { _id: userId } = req.user;
       const { postId } = req.params;
       console.log(userId);
       // const post = await Post.findById(postId);
-      const alreadyLike = await Like.find({ userId, postId });
+      const alreadyLike = await Like.findOne({ userId, postId });
       if (alreadyLike) {
         await Like.deleteOne({ userId, postId });
         return res
