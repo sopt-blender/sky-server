@@ -6,13 +6,14 @@ import util from "../../modules/util";
 export const postController = {
   get_all: async (req, res, next) => {
     try {
-      const imageType = req.query.imagetype;
-      let posts;
-      if(imageType){
-        posts = await(postModel.find({'imageType':imageType})).exec();
-      } else{
-        posts = await(postModel.find({})).exec();
-      }
+      const {imagetype, page} = req.query;
+      
+      const posts = await(postModel.find(
+        imagetype ? {'imageType':imagetype} : {},
+        null, 
+        page ? {skip:(page-1)*20, limit:20} : {}
+      ));
+      
       res
         .status(statusCode.OK)
         .json(util.success(statusCode.OK, "짜잔", posts));
@@ -130,20 +131,4 @@ export const postController = {
         );
     }
   },
-
-  resize_image: async(req, res, next) => {
-    try{
-      req.body
-    } catch(error){
-      console.log(error);
-      res
-        .status(statusCode.INTERNAL_SERVER_ERROR)
-        .json(
-          util.fail(
-            statusCode.INTERNAL_SERVER_ERROR,
-            "알 수 없는 에러가 발생했습니다",
-          ),
-        );
-    }
-  }
 };
