@@ -46,7 +46,7 @@ export const postController = {
       console.log(req.file);
       console.log(req.body);
       const newPost = new postModel({
-        image: req.file.location,
+        image: req.file.transforms[0].location,
         imageType: req.body.imageType,
         location: req.body.location,
         time: req.body.time,
@@ -125,4 +125,20 @@ export const postController = {
         );
     }
   },
+
+  resize_image: async(req, res, next) => {
+    try{
+      req.body
+    } catch(error){
+      console.log(error);
+      res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .json(
+          util.fail(
+            statusCode.INTERNAL_SERVER_ERROR,
+            "알 수 없는 에러가 발생했습니다",
+          ),
+        );
+    }
+  }
 };
