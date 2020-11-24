@@ -5,7 +5,7 @@ import authMiddleware from "../../middlewares/auth";
 const usersRouter = express.Router();
 
 // 유저 정보 by Id
-// usersRouter.get("/auth/test", );
+usersRouter.get("/:userId", userController.get_one_user);
 
 // 모든 유저 정보
 

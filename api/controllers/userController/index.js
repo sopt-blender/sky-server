@@ -3,6 +3,7 @@ import request from "request";
 import jwt from "../../modules/jwt";
 import statusCode from "../../modules/statusCode";
 import util from "../../modules/util";
+import responseMessage from "../../modules/responseMessage";
 
 const userController = {
   kakaoLogin: async (req, res) => {
@@ -48,6 +49,32 @@ const userController = {
     res.json("로그인");
   },
   snsTypeCheck: (req, res, next) => {},
+
+  get_one_user: async (req, res, next) => {
+    const { userId } = req.params;
+    try {
+      const user = await User.findById(userId);
+      res
+        .status(statusCode.OK)
+        .json(
+          util.success(
+            statusCode.OK,
+            responseMessage.PROFILE_GET_SUCCESS,
+            user,
+          ),
+        );
+    } catch (error) {
+      console.log(error);
+      res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .json(
+          util.fail(
+            statusCode.INTERNAL_SERVER_ERROR,
+            responseMessage.PROFILE_GET_FAIL,
+          ),
+        );
+    }
+  },
 };
 
 export default userController;

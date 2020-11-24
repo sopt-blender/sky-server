@@ -24,6 +24,7 @@ module.exports = {
 
   /* 프로필 */
   PROFILE_GET_SUCCESS: "프로필 기본정보 조회 성공",
+  PROFILE_GET_FAIL: "프로필 기본정보 조회 실패",
   PROFILE_POST_SUCCESS: "프로필 등록 성공",
   PROFILE_POST_FAIL: "프로필 등록 실패",
 

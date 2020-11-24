@@ -1,5 +1,7 @@
 import likeModel from "../../models/Like";
+import Post from "../../models/Post";
 import postModel from "../../models/Post";
+import User from "../../models/User";
 import responseMessage from "../../modules/responseMessage";
 import statusCode from "../../modules/statusCode";
 import util from "../../modules/util";
@@ -7,14 +9,13 @@ import util from "../../modules/util";
 export const postController = {
   get_all_posts: async (req, res, next) => {
     try {
-      const {imagetype, page} = req.query;
-      
-      const posts = await(postModel.find(
-        imagetype ? {'imageType':imagetype} : {},
-        null, 
-        page ? {skip:(page-1)*20, limit:20} : {}
-      ));
-      
+      const { imagetype, page } = req.query;
+
+      const posts = await postModel.find(
+        imagetype ? { imageType: imagetype } : {},
+        null,
+        page ? { skip: (page - 1) * 20, limit: 20 } : {},
+      );
 
       res
         .status(statusCode.OK)
@@ -62,13 +63,14 @@ export const postController = {
     }
   },
   create_one_post: async (req, res, next) => {
+    const { id: userId } = req.user;
     try {
-      const newPost = new postModel({
+      const newPost = await Post.create({
         image: req.file.transforms[0].location,
         imageType: req.body.imageType,
         location: req.body.location,
         time: req.body.time,
-        creator: req.user.id,
+        creatorId: userId,
       });
 
       res
@@ -143,6 +145,32 @@ export const postController = {
     const { _id: userId } = req.user;
     const { postId } = req.params;
     try {
+      const user = await User.findById(userId);
+      const post = await Post.findById(postId);
+
+      if (!user.likedPosts.includes(postId)) {
+        // 좋아요 생성
+        await User.updateOne(
+          { _id: userId, likedPosts: { $ne: postId } },
+          { $push: { likedPosts: postId } },
+        );
+        return res
+          .status(statusCode.OK)
+          .json(
+            util.success(statusCode.OK, responseMessage.LIKE_SUCCESS, post),
+          );
+      } else {
+        // 좋아요 제거
+        await User.updateOne(
+          { _id: userId, likedPosts: { $eq: postId } },
+          { $pull: { likedPosts: postId } },
+        );
+        return res
+          .status(statusCode.OK)
+          .json(
+            util.success(statusCode.OK, responseMessage.UNLIKE_SUCCESS, post),
+          );
+      }
     } catch (error) {
       console.log(error);
       res
@@ -155,46 +183,4 @@ export const postController = {
         );
     }
   },
-
-  // toggle_like: async (req, res, next) => {
-  //   try {
-  //     const { _id: userId } = req.user;
-  //     const { postId } = req.params;
-  //     console.log(userId);
-  //     // const post = await Post.findById(postId);
-  //     const alreadyLike = await Like.findOne({ userId, postId });
-  //     if (alreadyLike) {
-  //       await Like.deleteOne({ userId, postId });
-  //       return res
-  //         .status(statusCode.OK)
-  //         .json(
-  //           util.success(
-  //             statusCode.OK,
-  //             responseMessage.UNLIKE_SUCCESS,
-  //             alreadyLike,
-  //           ),
-  //         );
-  //     } else {
-  //       const like = await Like.create({
-  //         userId,
-  //         postId,
-  //       });
-  //       return res
-  //         .status(statusCode.OK)
-  //         .json(
-  //           util.success(statusCode.OK, responseMessage.LIKE_SUCCESS, like),
-  //         );
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     res
-  //       .status(statusCode.INTERNAL_SERVER_ERROR)
-  //       .json(
-  //         util.fail(
-  //           statusCode.INTERNAL_SERVER_ERROR,
-  //           responseMessage.TOGGLE_LIKE_FAIL,
-  //         ),
-  //       );
-  //   }
-  // },
 };
