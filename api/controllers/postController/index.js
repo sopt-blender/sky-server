@@ -1,5 +1,5 @@
-import Like from "../../models/Like";
-import Post from "../../models/Post";
+import likeModel from "../../models/Like";
+import postModel from "../../models/Post";
 import responseMessage from "../../modules/responseMessage";
 import statusCode from "../../modules/statusCode";
 import util from "../../modules/util";
