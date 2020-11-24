@@ -8,27 +8,26 @@ import indexRouter from "./api/routes";
 
 const app = express();
 
+app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-  );
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+//   );
 
-  if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-    return res.status(statusCode.OK).json({});
-  }
-  next();
-});
+//   if (req.method === "OPTIONS") {
+//     res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+//     return res.status(statusCode.OK).json({});
+//   }
+//   next();
+// });
 
-// app.use("/api/v1/users", usersRouter);
-// app.use("/api/v1/posts", postsRouter);
 app.use("/api/v1", indexRouter);
 
 // catch 404 and forward to error handler

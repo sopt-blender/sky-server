@@ -19,6 +19,15 @@ export const postController = {
       );
     }
   },
+  get_my_posts: async (req, res, next) => {
+    const { id: userId } = req.user;
+    try {
+      const myPosts = await Post.find({ creator: userId }).exec();
+      console.log(myPosts);
+    } catch (error) {
+      console.log(error);
+    }
+  },
   get_one_post: async (req, res, next) => {
     try {
       const { postId } = req.params;
@@ -44,14 +53,12 @@ export const postController = {
   },
   create_one_post: async (req, res, next) => {
     try {
-      console.log(req.file);
-      console.log(req.body);
       const newPost = await Post.create({
         image: req.file.location,
         imageType: req.body.imageType,
         location: req.body.location,
         time: req.body.time,
-        // user: req.body.userId,
+        creator: req.user.id,
       });
 
       res
@@ -124,8 +131,9 @@ export const postController = {
   },
   toggle_like: async (req, res, next) => {
     try {
-      const { userId } = req.body;
+      const { id: userId } = req.user;
       const { postId } = req.params;
+      console.log(userId);
       // const post = await Post.findById(postId);
       const alreadyLike = await Like.find({ userId, postId });
       if (alreadyLike) {
