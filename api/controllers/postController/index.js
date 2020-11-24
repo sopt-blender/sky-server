@@ -1,10 +1,11 @@
-import postModel from "../../models/postModel";
+import Like from "../../models/Like";
+import Post from "../../models/Post";
 import responseMessage from "../../modules/responseMessage";
 import statusCode from "../../modules/statusCode";
 import util from "../../modules/util";
 
 export const postController = {
-  get_all: async (req, res, next) => {
+  get_all_posts: async (req, res, next) => {
     try {
       const {imagetype, page} = req.query;
       
@@ -14,6 +15,7 @@ export const postController = {
         page ? {skip:(page-1)*20, limit:20} : {}
       ));
       
+
       res
         .status(statusCode.OK)
         .json(util.success(statusCode.OK, "짜잔", posts));
@@ -24,10 +26,19 @@ export const postController = {
       );
     }
   },
-  get_post: async (req, res, next) => {
+  get_my_posts: async (req, res, next) => {
+    const { id: userId } = req.user;
+    try {
+      const myPosts = await Post.find({ creator: userId }).exec();
+      console.log(myPosts);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  get_one_post: async (req, res, next) => {
     try {
       const { postId } = req.params;
-      const post = await postModel.findById(postId);
+      const post = await Post.findById(postId);
       post
         ? res
             .status(statusCode.OK)
@@ -47,24 +58,20 @@ export const postController = {
         );
     }
   },
-  create_post: async (req, res, next) => {
+  create_one_post: async (req, res, next) => {
     try {
-      console.log(req.file);
-      console.log(req.body);
       const newPost = new postModel({
         image: req.file.transforms[0].location,
         imageType: req.body.imageType,
         location: req.body.location,
         time: req.body.time,
-        // user: req.body.userId,
+        creator: req.user.id,
       });
-      const post = await newPost.save();
-      console.log(post);
 
       res
         .status(statusCode.CREATED)
         .json(
-          util.success(statusCode.CREATED, "포스트가 생성되었습니다", post),
+          util.success(statusCode.CREATED, "포스트가 생성되었습니다", newPost),
         );
     } catch (error) {
       console.log(error);
@@ -74,7 +81,7 @@ export const postController = {
     }
   },
 
-  update_post: async (req, res, next) => {
+  update_one_post: async (req, res, next) => {
     try {
       const { postId } = req.params;
       console.log(req.body);
@@ -84,11 +91,9 @@ export const postController = {
         time: req.body.time,
       };
       console.log(props);
-      const updatedPost = await postModel
-        .findByIdAndUpdate(postId, props, {
-          new: true,
-        })
-        .exec();
+      const updatedPost = await Post.findByIdAndUpdate(postId, props, {
+        new: true,
+      }).exec();
       console.log(updatedPost);
       updatedPost
         ? res
@@ -112,10 +117,10 @@ export const postController = {
     }
   },
 
-  delete_post: async (req, res, next) => {
+  delete_one_post: async (req, res, next) => {
     try {
       const { postId } = req.params;
-      const post = await postModel.findByIdAndDelete(postId);
+      const post = await Post.findByIdAndDelete(postId);
       res
         .status(statusCode.OK)
         .json(util.success(statusCode.OK, "포스트가 삭제되었습니다", post));
@@ -127,6 +132,47 @@ export const postController = {
           util.fail(
             statusCode.INTERNAL_SERVER_ERROR,
             "알 수 없는 에러가 발생했습니다",
+          ),
+        );
+    }
+  },
+  toggle_like: async (req, res, next) => {
+    try {
+      const { _id: userId } = req.user;
+      const { postId } = req.params;
+      console.log(userId);
+      // const post = await Post.findById(postId);
+      const alreadyLike = await Like.findOne({ userId, postId });
+      if (alreadyLike) {
+        await Like.deleteOne({ userId, postId });
+        return res
+          .status(statusCode.OK)
+          .json(
+            util.success(
+              statusCode.OK,
+              responseMessage.UNLIKE_SUCCESS,
+              alreadyLike,
+            ),
+          );
+      } else {
+        const like = await Like.create({
+          userId,
+          postId,
+        });
+        return res
+          .status(statusCode.OK)
+          .json(
+            util.success(statusCode.OK, responseMessage.LIKE_SUCCESS, like),
+          );
+      }
+    } catch (error) {
+      console.log(error);
+      res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .json(
+          util.fail(
+            statusCode.INTERNAL_SERVER_ERROR,
+            responseMessage.TOGGLE_LIKE_FAIL,
           ),
         );
     }
