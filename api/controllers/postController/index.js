@@ -7,8 +7,15 @@ import util from "../../modules/util";
 export const postController = {
   get_all_posts: async (req, res, next) => {
     try {
-      const posts = await Post.find().exec();
-      console.log(posts);
+      const {imagetype, page} = req.query;
+      
+      const posts = await(postModel.find(
+        imagetype ? {'imageType':imagetype} : {},
+        null, 
+        page ? {skip:(page-1)*20, limit:20} : {}
+      ));
+      
+
       res
         .status(statusCode.OK)
         .json(util.success(statusCode.OK, "짜잔", posts));
@@ -53,8 +60,8 @@ export const postController = {
   },
   create_one_post: async (req, res, next) => {
     try {
-      const newPost = await Post.create({
-        image: req.file.location,
+      const newPost = new postModel({
+        image: req.file.transforms[0].location,
         imageType: req.body.imageType,
         location: req.body.location,
         time: req.body.time,
