@@ -5,7 +5,7 @@ import authMiddleware from "../../middlewares/auth";
 const usersRouter = express.Router();
 
 // 유저 정보 by Id
-usersRouter.get("/auth/test", authMiddleware.checkToken);
+// usersRouter.get("/auth/test", );
 
 // 모든 유저 정보
 
