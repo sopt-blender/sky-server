@@ -46,20 +46,18 @@ export const postController = {
     try {
       console.log(req.file);
       console.log(req.body);
-      const newPost = new Post({
+      const newPost = await Post.create({
         image: req.file.location,
         imageType: req.body.imageType,
         location: req.body.location,
         time: req.body.time,
         // user: req.body.userId,
       });
-      const post = await newPost.save();
-      console.log(post);
 
       res
         .status(statusCode.CREATED)
         .json(
-          util.success(statusCode.CREATED, "포스트가 생성되었습니다", post),
+          util.success(statusCode.CREATED, "포스트가 생성되었습니다", newPost),
         );
     } catch (error) {
       console.log(error);
@@ -135,7 +133,11 @@ export const postController = {
         return res
           .status(statusCode.OK)
           .json(
-            util.success(statusCode.OK, responseMessage.UNLIKE_SUCCESS, "성공"),
+            util.success(
+              statusCode.OK,
+              responseMessage.UNLIKE_SUCCESS,
+              alreadyLike,
+            ),
           );
       } else {
         const like = await Like.create({
