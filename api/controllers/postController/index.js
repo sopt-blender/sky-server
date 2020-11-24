@@ -6,8 +6,13 @@ import util from "../../modules/util";
 export const postController = {
   get_all: async (req, res, next) => {
     try {
-      const posts = await postModel.find().exec();
-      console.log(posts);
+      const imageType = req.query.imagetype;
+      let posts;
+      if(imageType){
+        posts = await(postModel.find({'imageType':imageType})).exec();
+      } else{
+        posts = await(postModel.find({})).exec();
+      }
       res
         .status(statusCode.OK)
         .json(util.success(statusCode.OK, "짜잔", posts));
