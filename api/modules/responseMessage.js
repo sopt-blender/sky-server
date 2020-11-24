@@ -23,7 +23,12 @@ module.exports = {
   DB_ERROR: "DB 오류",
 
   /* 프로필 */
-    PROFILE_GET_SUCCESS: "프로필 기본정보 조회 성공",
-    PROFILE_POST_SUCCESS: "프로필 등록 성공",
-    PROFILE_POST_FAIL : "프로필 등록 실패"
+  PROFILE_GET_SUCCESS: "프로필 기본정보 조회 성공",
+  PROFILE_POST_SUCCESS: "프로필 등록 성공",
+  PROFILE_POST_FAIL: "프로필 등록 실패",
+
+  // 좋아요
+  LIKE_SUCCESS: "좋아요 생성 성공",
+  UNLIKE_SUCCESS: "좋아요 제거 성공",
+  TOGGLE_LIKE_FAIL: "좋아요 토글 실패",
 };
