@@ -1,14 +1,14 @@
 const randToken = require("rand-token");
 const jwt = require("jsonwebtoken");
-const secretKey = require("../config/secretKey").secretKey;
-const options = require("../config/secretKey").options;
+const secretKey = require("../../config/secretKey").secretKey;
+const options = require("../../config/secretKey").options;
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
 module.exports = {
-  sign: async (user) => {
+  sign: async (id) => {
     const payload = {
-      email: user.email,
+      id: id,
     };
     const result = {
       token: jwt.sign(payload, secretKey, options),
